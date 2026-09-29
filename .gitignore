@@ -48,3 +48,5 @@ htmlcov/
 *.db
 *.sqlite3
 local_storage/
+
+.vercel
