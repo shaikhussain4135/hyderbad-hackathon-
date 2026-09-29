@@ -23,6 +23,24 @@ try:
 except Exception as e:
     st.error(f"Database initialization warning: {str(e)}")
 
+# Authentication check
+if not st.session_state.get("authenticated", False):
+    from pages.login import render_login_page
+    render_login_page()
+    st.stop()
+
+# Sidebar user profile & logout
+user = st.session_state.get("user", {})
+st.sidebar.markdown(f"### {user.get('avatar', '👤')} {user.get('name', 'Support Agent')}")
+st.sidebar.caption(f"Role: **{user.get('role', 'Agent')}**")
+
+if st.sidebar.button("🚪 Sign Out", use_container_width=True):
+    st.session_state["authenticated"] = False
+    st.session_state.pop("user", None)
+    st.rerun()
+
+st.sidebar.divider()
+
 # Sidebar navigation & status
 st.sidebar.title("🧠 Support Memory AI")
 st.sidebar.caption("Persistent Experience Agent via Hindsight")

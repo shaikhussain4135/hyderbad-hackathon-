@@ -54,11 +54,13 @@ def test_end_to_end_memory_learning_loop():
     4. Same customer submits similar issue
     5. Agent recalls previous solution from Hindsight (has_memory=True)
     """
-    cust_id = "cust_e2e_learner"
+    import uuid
+    uid = uuid.uuid4().hex[:6]
+    cust_id = f"cust_e2e_learner_{uid}"
     CustomerRepository.create(
         customer_id=cust_id,
-        name="E2E Learner",
-        email="learner@example.com",
+        name=f"E2E Learner {uid}",
+        email=f"learner_{uid}@example.com",
         product="Data Lake Engine",
         plan="Enterprise",
         environment="Ubuntu 22.04 LTS",
@@ -71,7 +73,7 @@ def test_end_to_end_memory_learning_loop():
 
     # 2. Resolve ticket & learn experience into Hindsight
     t1 = TicketRepository.create(
-        ticket_id="TCK-E2E-01",
+        ticket_id=f"TCK-E2E-{uid}",
         customer_id=cust_id,
         issue=first_issue,
         category=res1["analysis"]["category"],
