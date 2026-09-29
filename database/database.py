@@ -25,10 +25,15 @@ def get_engine():
     db_url = config.database_url
 
     if not db_url or not db_url.strip():
-        # Fallback to local SQLite storage
-        local_dir = Path(__file__).resolve().parent.parent / "local_storage"
-        local_dir.mkdir(exist_ok=True)
-        sqlite_path = local_dir / "agent.db"
+        # Fallback to local SQLite storage (with /tmp fallback for serverless environments)
+        try:
+            local_dir = Path(__file__).resolve().parent.parent / "local_storage"
+            local_dir.mkdir(exist_ok=True)
+            sqlite_path = local_dir / "agent.db"
+        except (OSError, PermissionError):
+            local_dir = Path("/tmp") / "customer_agent_storage"
+            local_dir.mkdir(exist_ok=True)
+            sqlite_path = local_dir / "agent.db"
         sqlite_url = f"sqlite:///{sqlite_path.as_posix()}"
         engine = create_engine(sqlite_url, connect_args={"check_same_thread": False})
         return engine

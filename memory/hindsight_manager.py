@@ -23,12 +23,21 @@ except ImportError:
 
 class HindsightMemoryManager:
     """Manages AI agent persistent memory with official Hindsight SDK."""
-
     def __init__(self):
-        self.fallback_file = Path(__file__).resolve().parent.parent / "local_storage" / "hindsight_memories.json"
-        self.fallback_file.parent.mkdir(exist_ok=True)
+        try:
+            local_dir = Path(__file__).resolve().parent.parent / "local_storage"
+            local_dir.mkdir(exist_ok=True)
+            self.fallback_file = local_dir / "hindsight_memories.json"
+        except (OSError, PermissionError):
+            local_dir = Path("/tmp") / "customer_agent_storage"
+            local_dir.mkdir(exist_ok=True)
+            self.fallback_file = local_dir / "hindsight_memories.json"
+
         if not self.fallback_file.exists():
-            self.fallback_file.write_text("[]", encoding="utf-8")
+            try:
+                self.fallback_file.write_text("[]", encoding="utf-8")
+            except Exception:
+                pass
 
     def _is_server_reachable(self, url: str) -> bool:
         """Quick 250ms socket check to determine if host/port is accepting connections."""
