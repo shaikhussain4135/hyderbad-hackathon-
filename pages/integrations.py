@@ -88,10 +88,14 @@ def render_integrations_page():
 
     # 3. Secure Configuration Editor
     st.subheader("⚙️ Local Service Credentials")
-    st.caption("Settings are stored safely in your local `.env` and are strictly excluded from git commits.")
+    st.markdown(
+        "You can enter and update your credentials directly below. "
+        "They are saved safely to your local environment and applied immediately without restarting the app."
+    )
 
     with st.form("config_form"):
         st.markdown("#### 1. Hindsight Memory Server")
+        st.caption("🔗 [Hindsight GitHub & Docs](https://github.com/vectorize-io/hindsight) | Default local endpoint: `http://localhost:8888`")
         f_hindsight_url = st.text_input(
             "Hindsight Endpoint URL",
             value=config.hindsight_url,
@@ -105,6 +109,7 @@ def render_integrations_page():
         )
 
         st.markdown("#### 2. Neon PostgreSQL Database")
+        st.caption("🔗 [Get Neon Database Connection String](https://console.neon.tech) — Format: `postgresql://user:pass@ep-xyz.neon.tech/neondb?sslmode=require`")
         f_db_url = st.text_input(
             "Neon Connection String (DATABASE_URL)",
             value=config.database_url or "",
@@ -113,6 +118,7 @@ def render_integrations_page():
         )
 
         st.markdown("#### 3. LLM Reasoning Engine")
+        st.caption("🔗 [Get Free Groq API Key](https://console.groq.com/keys) | [OpenAI API Keys](https://platform.openai.com/api-keys)")
         provider_options = ["groq", "openai", "mock"]
         current_idx = provider_options.index(config.llm_provider) if config.llm_provider in provider_options else 0
         f_provider = st.selectbox("LLM Provider", options=provider_options, index=current_idx)
@@ -121,7 +127,7 @@ def render_integrations_page():
             f"{f_provider.title()} API Key",
             value=config.llm_api_key or "",
             type="password",
-            placeholder=f"Enter {f_provider} API key"
+            placeholder=f"Enter {f_provider} API key (e.g. gsk_... for Groq)"
         )
 
         default_model = "llama-3.3-70b-versatile" if f_provider == "groq" else "gpt-4o-mini"
